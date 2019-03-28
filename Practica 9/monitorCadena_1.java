@@ -1,0 +1,51 @@
+//MONITOR PRODUCTOR CONSUMIDOR CON API ESTÁNDAR
+//MODIFICAR PARA TRABAJAR CON UN BUFFER DE MATRICES, SEGÚN SE PIDE EN EL EJERCICIO 2
+//LUEGO, HACER UN DISEÑO DE HEBRAS
+ 
+    public class monitorCadena_1 {        
+      private int numSlots = 0;
+      private Matriz[] buffer = null;
+      private int putIn = 0, takeOut = 0;
+      private int cont = 0;
+      
+      public monitorCadena_1(int numSlots) {
+        this.numSlots = numSlots;
+        buffer = new Matriz[numSlots];
+      }
+      
+      public synchronized void insertar (Matriz valor) {
+        while (cont == numSlots)
+          try {
+            wait();
+          } catch (InterruptedException e) {
+            System.err.println("wait interrumpido");
+          }
+        buffer[putIn] = valor;
+        putIn = (putIn + 1) % numSlots;
+        cont++;                   
+        notifyAll();  
+      }
+      
+      public synchronized Matriz extraer () {
+        Matriz valor;
+        while (cont == 0)
+          try {
+            wait();
+          } catch (InterruptedException e) {
+            System.err.println("wait interrumpido");
+          }
+        valor = buffer[takeOut];
+        takeOut = (takeOut + 1) % numSlots;
+        cont--;                           
+        notifyAll();
+        return valor;
+      }
+  }//Buffer
+    
+
+
+
+
+
+
+
